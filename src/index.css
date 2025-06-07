@@ -1,1 +1,18 @@
 @import 'tailwindcss';
+*{
+  box-sizing: border-box;
+}
+:root{
+  --Primary: #f8f8f8;
+  --Secondary: #f2f0ec;
+  --Accent: #011429;
+  --Default: #030303;
+  --Background: #06060554;
+  --NavSecondary: #ffffffe3;
+  --NavBackgroundTwo: #ffffff84;
+  --NavBackground: #ffffff00;
+  --Inline: inline-end;
+}
+.app{
+        font-family: "Chakra Petch", sans-serif;
+}

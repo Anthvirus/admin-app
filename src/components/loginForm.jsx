@@ -1,0 +1,67 @@
+import { useState } from "react";
+import ShipImage from "../assets/Ship-freight.jpg";
+import NaconLogo from "../assets/Nacon.png"
+
+export default function LoginForm() {
+  const [adminId, setAdminId] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add your login logic here
+    console.log("Admin ID:", adminId);
+    console.log("Password:", password);
+  };
+
+  return (
+    <div className="h-full flex bg-[var(--Secondary)]">
+      <img src={ShipImage} alt="" className="object-cover w-2/3" />
+      <div className="w-full bg-[var(--Primary)] p-8 rounded-2xl shadow-md flex justify-center flex-col">
+        <img src={NaconLogo} className="size-40 mx-auto -mt-40" alt=""/>
+        <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label
+              htmlFor="adminId"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
+              Admin ID
+            </label>
+            <input
+              type="text"
+              id="adminId"
+              value={adminId}
+              onChange={(e) => setAdminId(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:[var(--Accent)]"
+              placeholder="Enter Admin ID"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter Password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-2 px-4 hover:opacity-80 hover:scale-[101%] cursor-pointer bg-[var(--Accent)] text-white font-semibold rounded-lg transition duration-200"
+          >
+            Log In
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
