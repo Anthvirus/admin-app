@@ -17,6 +17,9 @@ export default function HomePage() {
             <Link to="/login" className="bg-[var(--Secondary)] text-[var(--Accent)] p-16 rounded-xl shadow-xl justify-center delay-[.125s] duration-300 items-center flex hover:scale-105 cursor-pointer">
               <p className="text-2xl font-bold">Admin Mode</p>
             </Link>
+                        <Link to="/admin" className="bg-[var(--Secondary)] text-[var(--Accent)] p-16 rounded-xl shadow-xl justify-center delay-[.125s] duration-300 items-center flex hover:scale-105 cursor-pointer">
+              <p className="text-2xl font-bold">Admin Page</p>
+            </Link>
           </div>
         </div>
       </div>
