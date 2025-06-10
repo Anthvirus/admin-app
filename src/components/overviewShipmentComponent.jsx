@@ -1,152 +1,73 @@
 import NaconLogo from "../assets/Nacon.jpg";
 
-const shipments = [
+const initialShipment = [
   {
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Lagos",
-    source: "Rotterdam",
+    Message: "Success",
+    Status: "Arrived",
+    StatusId: 40,
+    BLReferenceNo: "GGZ2544026",
+    ShippingLine: "CMA CGM",
+    ContainerNumber: "TCNU1230488",
+    ContainerTEU: "40",
+    ContainerType: "HC",
+    FromCountry: "CHINA",
+    Pol: "NANSHA",
+    LoadingDate: { Date: "2025-05-25", IsActual: true },
+    DepartureDate: { Date: "2025-05-26", IsActual: true },
+    ToCountry: "NIGERIA",
+    Pod: "LEKKI",
+    ArrivalDate: { Date: "2025-06-29", IsActual: false },
+    DischargeDate: { Date: "2025-06-29", IsActual: false },
+    Vessel: "CMA CGM MAGELLAN",
+    VesselIMO: "9454424",
+    VesselVoyage: "0WWKXW1MA",
+    EmptyToShipperDate: "2025-05-22",
+    GateInDate: "2025-05-24",
+    FormatedTransitTime: "35 days",
+    FirstETA: "2025-06-29",
+    LiveMapUrl:
+      "https://shipsgo.com/live-map-container-tracking?query=TCNU1230488",
+    Co2Emission: "1.91",
   },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Port Harcourt",
-    source: "Hamburg",
-  },
-  {
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Lagos",
-    source: "Rotterdam",
-  },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Port Harcourt",
-    source: "Hamburg",
-  },{
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Lagos",
-    source: "Rotterdam",
-  },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Port Harcourt",
-    source: "Hamburg",
-  },{
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Lagos",
-    source: "Rotterdam",
-  },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Port Harcourt",
-    source: "Hamburg",
-  },{
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Lagos",
-    source: "Naples",
-  },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Liverpool",
-    source: "Jakarta",
-  },{
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 12,
-    destination: "Shanghai",
-    source: "Hamburg",
-  },
-  {
-    id: 2,
-    arrivalDate: "2025-06-10",
-    departureDate: "2025-06-06",
-    bldNumber: "BLD789012",
-    containers: 8,
-    destination: "Port Harcourt",
-    source: "Hamburg",
-  },{
-    id: 1,
-    arrivalDate: "2025-06-05",
-    departureDate: "2025-06-01",
-    bldNumber: "BLD123456",
-    containers: 1,
-    destination: "Lagos",
-    source: "Rotterdam",
-  }
 ];
 
 export default function OverviewShipmentComponent() {
   return (
-    <div className="p-6 border-2 border-[var(--Secondary)] max-h-full rounded-xl flex flex-col">
+    <div className="p-6 h-full rounded-xl flex flex-col">
       <div className="static flex gap-6">
-        <img src={NaconLogo} alt="" className="size-20"/>
+        <img src={NaconLogo} alt="" className="size-20" />
         <h2 className="text-5xl uppercase font-bold my-8 text-[var(--Secondary)]">
-          Incoming Shipments.
+          Incoming Shipments View.
         </h2>
       </div>
       <div className="rounded-lg border border-[var(--Primary)] overflow-y-auto">
         <table className="min-w-full text-sm text-left">
-          <thead className="bg-[var(--Secondary)] text-[var(--Accent)] uppercase tracking-wider text-center text-2xl font-semibold h-24">
+          <thead className="bg-[var(--Primary)] opacity-80 text-[var(--Accent)] uppercase tracking-wider text-center text-xl font-semibold h-16">
             <tr>
-              <th className="px-4 py-3">BLD Number</th>
-              <th className="px-4 py-3">Arrival Date</th>
-              <th className="px-4 py-3">Departure Date</th>
-              <th className="px-4 py-3">Containers</th>
-              <th className="px-4 py-3">Source</th>
-              <th className="px-4 py-3">Destination</th>
+              <th className="px-4 py-3">Container No.</th>
+              <th className="px-4 py-3">Importer</th>
+              <th className="px-4 py-3">ETA</th>
+              <th className="px-4 py-3">Shipping Line</th>
+              <th className="px-4 py-3">Port of Discharge</th>
+              <th className="px-4 py-3">Consignee Name</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--Primary)]">
-            {shipments.map((shipment) => (
-              <tr key={shipment.id} className="hover:bg-[var(--Secondary)] hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-2xl delay-[.125s] duration-75">
-                <td className="px-4 py-3 font-mono underline">
-                  <code className="bg-[var(--NavBackgroundTwo)] p-1 rounded-md">{shipment.bldNumber}</code>
+            {initialShipment.map((shipment) => (
+              <tr
+                key={shipment.ContainerNumber}
+                className="hover:bg-[var(--Secondary)] hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-lg font-bold delay-[.125s] duration-75"
+              >
+                <td className="px-4 py-3 underline">
+                  <code className="bg-[var(--NavBackgroundTwo)] p-2 rounded-md">
+                    {shipment.ContainerNumber}
+                  </code>
                 </td>
-                <td className="px-4 py-3">{shipment.arrivalDate}</td>
-                <td className="px-4 py-3">{shipment.departureDate}</td>
-                <td className="px-4 py-3">{shipment.containers}</td>
-                <td className="px-4 py-3">{shipment.source}</td>
-                <td className="px-4 py-3">{shipment.destination}</td>
+                <td className="px-4 py-3">{shipment.importer || "-"}</td>
+                <td className="px-4 py-3">{shipment.FirstETA}</td>
+                <td className="px-4 py-3">{shipment.ShippingLine}</td>
+                <td className="px-4 py-3">{shipment.Pod}</td>
+                <td className="px-4 py-3">{shipment.consignee || "-"}</td>
               </tr>
             ))}
           </tbody>
