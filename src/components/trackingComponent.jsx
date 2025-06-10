@@ -14,8 +14,8 @@ export default function ShipmentList() {
       Status: "Arrived",
       StatusId: 40,
       BLReferenceNo: "GGZ2544026",
-      ShippingLine: "CMA CGM",
-      ContainerNumber: "TCNU1230488",
+      ShippingLine: ["CMA CGM","Ocean Network Express"],
+      ContainerNumber: ["TCNU1230488", "TCNU4238491"],
       ContainerTEU: "40",
       ContainerType: "HC",
       FromCountry: "CHINA",
@@ -76,15 +76,24 @@ export default function ShipmentList() {
     closeModals();
   };
 
-  function renderContainerCards () {
-    return shipments.map((shipment) => (
+function renderContainerCards() {
+  return shipments.flatMap((shipment) => {
+    const containers = Array.isArray(shipment.ContainerNumber)
+      ? shipment.ContainerNumber
+      : [shipment.ContainerNumber];
+
+    const shippingLines = Array.isArray(shipment.ShippingLine)
+      ? shipment.ShippingLine
+      : [shipment.ShippingLine];
+
+    return containers.map((container, i) => (
       <div
-        key={shipment.BLReferenceNo}
+        key={`${shipment.BLReferenceNo}-${container}`}
         className="bg-[var(--Secondary)] text-[var(--Accent)] shadow-md rounded-lg p-4 m-3"
       >
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold p-1 bg-gray-300 rounded-md font-mono">
-            {shipment.BLReferenceNo} - {shipment.ContainerNumber}
+            {shipment.BLReferenceNo} - {container}
           </h2>
           <p className="text-lg text-blue-600 font-bold m-4">
             <strong>From:</strong> {shipment.Pol}, {shipment.FromCountry} →{" "}
@@ -105,19 +114,32 @@ export default function ShipmentList() {
             </button>
           </div>
         </div>
-        <div className="flex mt-3 justify-between p-1">
-          <InfoRow label="Status" value={shipment.Status} style={shipment.Status == "Sailing" ? {color : "orange"} : {color : "Green"}} />
+        <div className="flex mt-3 justify-between p-1 gap-2">
+          <InfoRow
+            label="Status"
+            value={shipment.Status}
+            style={
+              shipment.Status === "Sailing"
+                ? { color: "orange" }
+                : { color: "green" }
+            }
+          />
           <InfoRow label="Importer" value="-" />
           <InfoRow label="ETA" value={shipment.FirstETA} />
           <InfoRow label="Shipping Releasing" value="-" />
-          <InfoRow label="Shipping Line" value={shipment.ShippingLine} />
+          <InfoRow
+            label="Shipping Line"
+            value={shippingLines[i] || shippingLines[0]}
+          />
           <InfoRow label="Custom Documentation" value="-" />
           <InfoRow label="Exam. & Custom Releasing" value="-" />
           <InfoRow label="Delivery" value="-" />
         </div>
       </div>
     ));
-  };
+  });
+}
+
 
   return (
     <>
