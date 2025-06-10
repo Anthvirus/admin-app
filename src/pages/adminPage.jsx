@@ -41,7 +41,7 @@ export default function AdminPage() {
       const response = await fetch(
         "https://www.shipsgo.com/api/v1.2/ContainerService/GetContainerInfo/?authCode=4c67a579b9330e566dc9aad595cc8a6a",
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
