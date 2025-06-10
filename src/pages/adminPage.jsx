@@ -30,7 +30,7 @@ export default function AdminPage() {
   };
 
   const handleCreate = async () => {
-    if (!formData.billLoadingNumber) {
+    if (!formData.billLoadingNumber.trim()) {
       setError("Please enter a Bill of Lading number.");
       return;
     }
@@ -39,14 +39,7 @@ export default function AdminPage() {
     setError("");
     try {
       const response = await fetch(
-        "https://www.shipsgo.com/api/v1.2/ContainerService/GetContainerInfo/?authCode=4c67a579b9330e566dc9aad595cc8a6a",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ billLoadingNumber: formData.billLoadingNumber }),
-        }
+        `https://www.shipsgo.com/api/v1.2/ContainerService/GetContainerInfo/?authCode=4c67a579b9330e566dc9aad595cc8a6a&billLoadingNumber=${encodeURIComponent(formData.billLoadingNumber)}`
       );
 
       const data = await response.json();
@@ -67,10 +60,8 @@ export default function AdminPage() {
   };
 
   const handleSubmitToDatabase = () => {
-    // Add your logic here to POST fetchedShipment to your database
     console.log("Submitting to database:", fetchedShipment);
 
-    // Reset everything
     setShowPreview(false);
     setFetchedShipment(null);
     closeModals();
@@ -145,9 +136,7 @@ export default function AdminPage() {
       {showPreview && fetchedShipment && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg relative">
-            <h3 className="text-lg font-semibold mb-4">
-              Shipment Preview
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Shipment Preview</h3>
             <div className="max-h-96 overflow-y-auto text-sm space-y-2">
               {fetchedShipment.ContainerList.map((container, idx) => (
                 <div
