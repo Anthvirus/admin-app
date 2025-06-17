@@ -7,7 +7,7 @@ import {
 import HomePage from "./pages/home";
 import OverviewPage from "./pages/overview";
 import AdminPage from "./pages/adminPage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/loginPage";
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
