@@ -1,9 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-import HomePage from './pages/home';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import HomePage from "./pages/home";
 import OverviewPage from "./pages/overview";
-import LoginPage from "./pages/loginPage";
 import AdminPage from "./pages/adminPage";
+import LoginPage from "./pages/LoginPage";
+
+function ProtectedRoute({ children }) {
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+  return isAuthenticated ? children : <Navigate to="/" />;
+}
 
 export default function App() {
   return (
@@ -11,9 +20,16 @@ export default function App() {
       <div className="max-w-screen h-screen border flex app">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/overview" element={<OverviewPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/overview" element={<OverviewPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>
