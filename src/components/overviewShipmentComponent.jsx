@@ -10,7 +10,9 @@ export default function OverviewShipmentComponent() {
   useEffect(() => {
     const fetchShipments = async () => {
       try {
-        const res = await axios.get("https://nacon-3v1d.onrender.com/api/shipments");
+        const res = await axios.get(
+          "https://nacon-3v1d.onrender.com/api/shipments"
+        );
         setShipments(res.data);
         setLoading(false);
       } catch (err) {
@@ -33,18 +35,22 @@ export default function OverviewShipmentComponent() {
       </div>
 
       {loading ? (
-        <div className="text-xl text-[var(--Secondary)] font-semibold my-10 text-center">Loading shipments...</div>
+        <div className="text-xl text-[var(--Secondary)] font-semibold my-10 text-center">
+          Loading shipments...
+        </div>
       ) : error ? (
         <div className="text-red-600 text-lg my-6 text-center">{error}</div>
       ) : (
         <div className="rounded-lg border border-[var(--Primary)] overflow-y-auto">
           <table className="min-w-full text-sm text-left">
             <thead className="bg-[var(--Primary)] opacity-80 text-[var(--Accent)] uppercase tracking-wider text-center text-xl font-semibold h-16">
-              <tr>
+              <tr className="grid grid-cols-8 min-w-full pt-1">
                 <th className="px-4 py-3">Container No.</th>
                 <th className="px-4 py-3">Importer</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">ETA</th>
                 <th className="px-4 py-3">Shipping Line</th>
+                <th className="px-4 py-3">Vessel</th>
                 <th className="px-4 py-3">Port of Discharge</th>
                 <th className="px-4 py-3">Consignee Name</th>
               </tr>
@@ -53,7 +59,7 @@ export default function OverviewShipmentComponent() {
               {shipments.map((shipment) => (
                 <tr
                   key={shipment.containerNo}
-                  className="hover:bg-[var(--Secondary)] hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-lg font-bold delay-[.125s] duration-75"
+                  className="hover:bg-[var(--Secondary)] grid grid-cols-8 min-w-full hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-lg font-bold delay-[.125s] duration-75"
                 >
                   <td className="px-4 py-3 underline">
                     <code className="bg-[var(--NavBackgroundTwo)] p-2 rounded-md">
@@ -61,9 +67,15 @@ export default function OverviewShipmentComponent() {
                     </code>
                   </td>
                   <td className="px-4 py-3">{shipment.importer || "-"}</td>
+                  <td className="px-4 py-3">{shipment.status || "-"}</td>
                   <td className="px-4 py-3">{shipment.eta || "-"}</td>
-                  <td className="px-4 py-3">{shipment.shippingLine.replace(/_/, " ") || "-"}</td>
-                  <td className="px-4 py-3">{shipment.portOfDischarge || "-"}</td>
+                  <td className="px-4 py-3">
+                    {shipment.shippingLine.replace(/_/, " ") || "-"}
+                  </td>
+                  <td className="px-4 py-3">{shipment.vessel || "-"}</td>
+                  <td className="px-4 py-3">
+                    {shipment.portOfDischarge || "-"}
+                  </td>
                   <td className="px-4 py-3">{shipment.consigneeName || "-"}</td>
                 </tr>
               ))}

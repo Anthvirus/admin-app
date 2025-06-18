@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import axios from "axios";
 
 const API_BASE = "https://nacon-3v1d.onrender.com/api/shipments";
 
 export default function ShipmentList() {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const [shipments, setShipments] = useState([]);
   const [editData, setEditData] = useState(null);
   const [deleteData, setDeleteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [editFields, setEditFields] = useState({});
+  const inputRefs = useRef({});
 
   useEffect(() => {
     fetchShipments();
@@ -26,29 +30,69 @@ export default function ShipmentList() {
     setLoading(false);
   };
 
-  const handleSave = async () => {
-    if (!editData || !editData.billLandingNo) return;
+  const handleEditClick = (shipment) => {
+    setEditData({ ...shipment });
+    setEditFields({
+      billLandingNo: shipment.billLandingNo || "",
+      containerNo: shipment.containerNo?.[0] || "",
+      importer: shipment.importer || "",
+      shippingLine: shipment.shippingLine || "",
+      examinationAndCustomReleasing:
+        shipment.examinationAndCustomReleasing || "",
+      consigneeName: shipment.consigneeName || "",
+      customDocumentation: shipment.customDocumentation || "",
+      portOfDischarge: shipment.portOfDischarge || "",
+      shippingReleasing: shipment.shippingReleasing || "",
+      delivery: shipment.delivery || "",
+    });
+    setShowEditModal(true);
+  };
 
-    setLoading(true); // <-- THIS must happen first
+  const handleSave = async () => {
+    const requiredFields = [
+      "containerNo",
+      "importer",
+      "shippingLine",
+      "examinationAndCustomReleasing",
+      "consigneeName",
+      "customDocumentation",
+      "portOfDischarge",
+      "shippingReleasing",
+    ];
+
+    const newData = { ...editData };
+    const errors = {};
+
+    requiredFields.forEach((field) => {
+      const value = inputRefs.current[field]?.value?.trim();
+      if (!value) {
+        errors[field] = "This field is required.";
+      } else {
+        newData[field] = field === "containerNo" ? [value] : value;
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
+    setLoading(true);
+
     try {
       const res = await axios.put(
         `${API_BASE}/${editData.id}`,
-        editData
+        newData
       );
       setMessage("✅ Shipment updated successfully.");
-      setShipments((prev) =>
-        prev.map((s) =>
-          s.billLandingNo === editData.billLandingNo ? res.data : s
-        )
-      );
       window.location.reload();
-      setEditData(null);
     } catch (err) {
       console.error("Error updating shipment:", err);
       setMessage("❌ Failed to update shipment.");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const handleDelete = async () => {
@@ -71,7 +115,7 @@ export default function ShipmentList() {
   };
 
   const InfoRow = ({ label, value, style }) => (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-2">
       <span className="text-xs">{label}:</span>
       <span className="font-semibold text-lg" style={style}>
         {value || "—"}
@@ -79,9 +123,15 @@ export default function ShipmentList() {
     </div>
   );
 
-  const Modal = ({ title, children }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full shadow-lg">
+  const Modal = ({ title, children, visible }) => (
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity ${
+        visible
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+      } bg-black bg-opacity-40`}
+    >
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
         {children}
       </div>
@@ -119,7 +169,7 @@ export default function ShipmentList() {
               </h2>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setEditData(shipment)}
+                  onClick={() => handleEditClick(shipment)}
                   className="hover:scale-110 text-shadow-blue-500 cursor-pointer"
                 >
                   <Pencil size={20} />
@@ -132,9 +182,13 @@ export default function ShipmentList() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-around">
               <InfoRow label="Importer" value={shipment.importer} />
-              <InfoRow label="Shipping Line" value={shipment.shippingLine.replace(/_/g, " ")} />
+              <InfoRow
+                label="Shipping Line"
+                value={shipment.shippingLine.replace(/_/g, " ")}
+              />
+              <InfoRow label="Vessel" value={shipment.vessel} />
               <InfoRow
                 label="Status"
                 value={shipment.status}
@@ -143,15 +197,7 @@ export default function ShipmentList() {
                 }}
               />
               <InfoRow label="ETA" value={shipment.eta} />
-              <InfoRow
-                label="Exam & Custom Releasing"
-                value={shipment.examinationAndCustomReleasing}
-              />
               <InfoRow label="Consignee Name" value={shipment.consigneeName} />
-              <InfoRow
-                label="Custom Documentation"
-                value={shipment.customDocumentation}
-              />
               <InfoRow
                 label="Port of Discharge"
                 value={shipment.portOfDischarge}
@@ -161,6 +207,15 @@ export default function ShipmentList() {
                 label="Shipping Releasing"
                 value={shipment.shippingReleasing}
               />
+              <InfoRow
+                label="Custom Documentation"
+                value={shipment.customDocumentation}
+              />
+              <InfoRow
+                label="Exam & Custom Releasing"
+                value={shipment.examinationAndCustomReleasing}
+              />
+              <InfoRow label="Delivery" value={shipment.delivery} />
             </div>
           </div>
         ))}
@@ -189,78 +244,87 @@ export default function ShipmentList() {
         </Modal>
       )}
 
-      {editData && (
-        <Modal title={`Edit ${editData.billLandingNo}`}>
-          {message && (
-            <div
-              className={`text-sm mb-4 px-4 py-2 rounded-md ${
-                message.startsWith("✅")
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {message}
-            </div>
-          )}
-          {[
-            "containerNo",
-            "importer",
-            "shippingLine",
-            "examinationAndCustomReleasing",
-            "consigneeName",
-            "customDocumentation",
-            "portOfDischarge",
-            "shippingReleasing",
-          ].map((field) => (
-            <div className="flex flex-col mb-3" key={field}>
-              <label className="capitalize text-sm font-medium">
-                {field.replace(/([A-Z])/g, " $1")}
-              </label>
-
-              <input
-                type="text"
-                className="border rounded px-2 py-1"
-                value={
-                  field === "containerNo"
-                    ? Array.isArray(editData.containerNo)
-                      ? editData.containerNo[0]
-                      : ""
-                    : editData[field] || ""
-                }
-                onChange={(e) =>
-                  setEditData((prev) => ({
-                    ...prev,
-                    [field]:
+      <Modal
+        title={`Edit Shipment - ${editData?.billLandingNo ?? ""}`}
+        visible={showEditModal}
+      >
+        {editData && (
+          <>
+            {message && (
+              <div
+                className={`text-sm mb-4 px-4 py-2 rounded-md ${
+                  message.startsWith("✅")
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+            <div className="grid grid-cols-3 gap-5 w-max">
+              {[
+                "containerNo",
+                "importer",
+                "shippingLine",
+                "examinationAndCustomReleasing",
+                "consigneeName",
+                "customDocumentation",
+                "portOfDischarge",
+                "shippingReleasing",
+                "delivery",
+              ].map((field) => (
+                <div className="flex flex-col mb-3" key={field}>
+                  <label className="capitalize text-sm font-medium">
+                    {field.replace(/([A-Z])/g, " $1")}
+                  </label>
+                  <input
+                    type="text"
+                    className={`border rounded px-2 py-1 ${
+                      formErrors[field] ? "border-red-500" : ""
+                    }`}
+                    defaultValue={
                       field === "containerNo"
-                        ? [e.target.value]
-                        : e.target.value,
-                  }))
-                }
-              />
+                        ? Array.isArray(editData?.containerNo)
+                          ? editData.containerNo[0] ?? ""
+                          : ""
+                        : editData?.[field] ?? ""
+                    }
+                    ref={(el) => {
+                      if (el) inputRefs.current[field] = el;
+                    }}
+                  />
+                  {formErrors[field] && (
+                    <span className="text-xs text-red-500">
+                      {formErrors[field]}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}{" "}
-          <div className="mt-4 flex justify-end gap-2">
-            <button
-              onClick={() => {
-                setEditData(null);
-                setMessage("");
-              }}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:opacity-80 cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              className={`px-4 py-2 text-white rounded-md hover:opacity-80 cursor-pointer ${
-                loading ? "bg-gray-400" : "bg-green-600"
-              }`}
-            >
-              {loading ? "Updating..." : "Update Shipment"}
-            </button>
-          </div>
-        </Modal>
-      )}
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setEditData(null);
+                  setShowEditModal(false);
+                  setMessage("");
+                }}
+                className="px-4 py-2 bg-gray-200 rounded-md hover:opacity-80 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className={`px-4 py-2 text-white rounded-md hover:opacity-80 cursor-pointer ${
+                  loading ? "bg-gray-400" : "bg-green-600"
+                }`}
+              >
+                {loading ? "Updating..." : "Update Shipment"}
+              </button>
+            </div>
+          </>
+        )}
+      </Modal>
     </>
   );
 }
