@@ -8,7 +8,7 @@ export default function OverviewShipmentComponent() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchShipments(){
+    async function fetchShipments() {
       try {
         const res = await axios.get(
           "https://nacon-3v1d.onrender.com/api/shipments"
@@ -20,7 +20,7 @@ export default function OverviewShipmentComponent() {
         setError("Failed to load shipments.");
         setLoading(false);
       }
-    };
+    }
 
     fetchShipments();
   }, []);
@@ -43,8 +43,8 @@ export default function OverviewShipmentComponent() {
       ) : (
         <div className="rounded-lg border border-[var(--Primary)] overflow-y-auto">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-[var(--Primary)] opacity-80 text-[var(--Accent)] uppercase tracking-wider text-center text-xl font-semibold h-16">
-              <tr className="grid grid-cols-8 min-w-full pt-1">
+            <thead className="bg-[var(--Primary)] opacity-80 text-[var(--Accent)] uppercase tracking-wider text-center text-lg font-semibold h-16">
+              <tr className="grid grid-cols-8 min-w-full pt-1 items-center">
                 <th className="px-4 py-3">Container No.</th>
                 <th className="px-4 py-3">Importer</th>
                 <th className="px-4 py-3">Status</th>
@@ -55,15 +55,20 @@ export default function OverviewShipmentComponent() {
                 <th className="px-4 py-3">Cosignee Name</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--Primary)]">
+            <tbody className="divide-y divide-[var(--Primary)">
               {shipments.map((shipment) => (
                 <tr
                   key={shipment.containerNo}
-                  className="hover:bg-[var(--Secondary)] grid grid-cols-8 min-w-full hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-lg font-bold delay-[.125s] duration-75"
+                  className="hover:bg-[var(--Secondary)] grid grid-cols-8 items-center min-w-full hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-md font-bold delay-[.125s] duration-75"
                 >
-                  <td className="px-4 py-3 underline">
-                    <code className="bg-[var(--NavBackgroundTwo)] p-2 rounded-md">
-                      {shipment.containerNo || "-"}
+                  <td className="px-4 py-3 underline align-top">
+                    <code className="bg-[var(--NavBackgroundTwo)] p-2 rounded-md whitespace-pre-line block">
+                      {Array.isArray(shipment.containerNo) &&
+                      shipment.containerNo.length > 0
+                        ? shipment.containerNo.map((num, i) => (
+                            <div key={i}>{num}</div>
+                          ))
+                        : "-"}
                     </code>
                   </td>
                   <td className="px-4 py-3">{shipment.importer || "-"}</td>

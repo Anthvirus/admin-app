@@ -119,7 +119,7 @@ export default function ShipmentList() {
   const InfoRow = ({ label, value, style }) => (
     <div className="flex flex-col p-2">
       <span className="text-xs">{label}:</span>
-      <span className="font-semibold text-lg" style={style}>
+      <span className="font-semibold text-md" style={style}>
         {value || "—"}
       </span>
     </div>
