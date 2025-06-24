@@ -55,6 +55,7 @@ export default function ShipmentList() {
       "customDocumentation",
       "portOfDischarge",
       "shippingReleasing",
+      "delivery"
     ];
 
     const newData = { ...editData };

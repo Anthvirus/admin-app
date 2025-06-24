@@ -76,7 +76,9 @@ export default function AdminPage() {
 
       const res = await axios.put(`${API_BASE}/${updated.id}`, payload);
       setShipments((prev) =>
-        prev.map((s) => (s.billLandingNo === updated.billLandingNo ? res.data : s))
+        prev.map((s) =>
+          s.billLandingNo === updated.billLandingNo ? res.data : s
+        )
       );
     } catch (err) {
       console.error("Error updating shipment:", err);
@@ -167,6 +169,7 @@ export default function AdminPage() {
           shipments={shipments}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+          onSuccessMessage={setSuccessMessage}
         />
       </div>
 
@@ -178,10 +181,24 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-4 grid grid-cols-3 gap-4">
-              {["billLandingNo", "containerNo", "importer", "shippingLine", "cosigneeName", "eta", "shippingReleasing", "customDocumentation", "examinationAndCustomReleasing", "portOfDischarge"].map((name) => (
+              {[
+                "billLandingNo",
+                "containerNo",
+                "importer",
+                "shippingLine",
+                "cosigneeName",
+                "eta",
+                "shippingReleasing",
+                "customDocumentation",
+                "examinationAndCustomReleasing",
+                "portOfDischarge",
+              ].map((name) => (
                 <div key={name} className="flex flex-col">
                   <label className="text-sm font-semibold mb-1" htmlFor={name}>
-                    {name.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}:
+                    {name
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (s) => s.toUpperCase())}
+                    :
                   </label>
                   <input
                     name={name}
@@ -198,9 +215,15 @@ export default function AdminPage() {
               ))}
             </div>
 
-            {isLoading && <p className="text-blue-700 font-medium">Creating entry...</p>}
-            {errorMessage && <p className="text-red-600 text-sm mt-2">{errorMessage}</p>}
-            {successMessage && <p className="text-green-600 text-sm mt-2">{successMessage}</p>}
+            {isLoading && (
+              <p className="text-blue-700 font-medium">Creating entry...</p>
+            )}
+            {errorMessage && (
+              <p className="text-red-600 text-sm mt-2">{errorMessage}</p>
+            )}
+            {successMessage && (
+              <p className="text-green-600 text-sm mt-2">{successMessage}</p>
+            )}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button
