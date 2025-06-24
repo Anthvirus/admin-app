@@ -8,7 +8,7 @@ export default function OverviewShipmentComponent() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchShipments = async () => {
+    async function fetchShipments(){
       try {
         const res = await axios.get(
           "https://nacon-3v1d.onrender.com/api/shipments"
@@ -52,7 +52,7 @@ export default function OverviewShipmentComponent() {
                 <th className="px-4 py-3">Shipping Line</th>
                 <th className="px-4 py-3">Vessel</th>
                 <th className="px-4 py-3">Port of Discharge</th>
-                <th className="px-4 py-3">Consignee Name</th>
+                <th className="px-4 py-3">Cosignee Name</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--Primary)]">
@@ -76,7 +76,7 @@ export default function OverviewShipmentComponent() {
                   <td className="px-4 py-3">
                     {shipment.portOfDischarge || "-"}
                   </td>
-                  <td className="px-4 py-3">{shipment.consigneeName || "-"}</td>
+                  <td className="px-4 py-3">{shipment.cosigneeName || "-"}</td>
                 </tr>
               ))}
             </tbody>

@@ -12,7 +12,6 @@ export default function ShipmentList() {
   const [deleteData, setDeleteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [editFields, setEditFields] = useState({});
   const inputRefs = useRef({});
 
   useEffect(() => {
@@ -23,7 +22,18 @@ export default function ShipmentList() {
     setLoading(true);
     try {
       const res = await axios.get(API_BASE);
-      setShipments(res.data);
+      const formatted = res.data.map((s) => ({
+        ...s,
+        containerNo: Array.isArray(s.containerNo)
+          ? s.containerNo
+          : typeof s.containerNo === "string"
+          ? s.containerNo
+              .split(",")
+              .map((c) => c.trim())
+              .filter(Boolean)
+          : [],
+      }));
+      setShipments(formatted);
     } catch (err) {
       console.error("Error fetching shipments:", err);
     }
@@ -32,19 +42,6 @@ export default function ShipmentList() {
 
   const handleEditClick = (shipment) => {
     setEditData({ ...shipment });
-    setEditFields({
-      billLandingNo: shipment.billLandingNo || "",
-      containerNo: shipment.containerNo?.[0] || "",
-      importer: shipment.importer || "",
-      shippingLine: shipment.shippingLine || "",
-      examinationAndCustomReleasing:
-        shipment.examinationAndCustomReleasing || "",
-      consigneeName: shipment.consigneeName || "",
-      customDocumentation: shipment.customDocumentation || "",
-      portOfDischarge: shipment.portOfDischarge || "",
-      shippingReleasing: shipment.shippingReleasing || "",
-      delivery: shipment.delivery || "",
-    });
     setShowEditModal(true);
   };
 
@@ -54,7 +51,7 @@ export default function ShipmentList() {
       "importer",
       "shippingLine",
       "examinationAndCustomReleasing",
-      "consigneeName",
+      "cosigneeName",
       "customDocumentation",
       "portOfDischarge",
       "shippingReleasing",
@@ -68,7 +65,14 @@ export default function ShipmentList() {
       if (!value) {
         errors[field] = "This field is required.";
       } else {
-        newData[field] = field === "containerNo" ? [value] : value;
+        if (field === "containerNo") {
+          newData[field] = value
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean);
+        } else {
+          newData[field] = value;
+        }
       }
     });
 
@@ -81,10 +85,7 @@ export default function ShipmentList() {
     setLoading(true);
 
     try {
-      const res = await axios.put(
-        `${API_BASE}/${editData.id}`,
-        newData
-      );
+      await axios.put(`${API_BASE}/update`, newData);
       setMessage("✅ Shipment updated successfully.");
       window.location.reload();
     } catch (err) {
@@ -165,8 +166,14 @@ export default function ShipmentList() {
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold p-1 bg-gray-300 rounded-md">
-                {shipment.billLandingNo} – {shipment.containerNo}
+                {shipment.billLandingNo} –{" "}
+                <span className="text-blue-900 font-mono">
+                  {shipment.containerNo?.length
+                    ? `{${shipment.containerNo.join(" - ")}}`
+                    : `{—}`}
+                </span>
               </h2>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => handleEditClick(shipment)}
@@ -182,11 +189,11 @@ export default function ShipmentList() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-around">
+            <div className="flex justify-around flex-wrap">
               <InfoRow label="Importer" value={shipment.importer} />
               <InfoRow
                 label="Shipping Line"
-                value={shipment.shippingLine.replace(/_/g, " ")}
+                value={(shipment.shippingLine || "").replace(/_/g, " ")}
               />
               <InfoRow label="Vessel" value={shipment.vessel} />
               <InfoRow
@@ -197,7 +204,7 @@ export default function ShipmentList() {
                 }}
               />
               <InfoRow label="ETA" value={shipment.eta} />
-              <InfoRow label="Consignee Name" value={shipment.consigneeName} />
+              <InfoRow label="Cosignee Name" value={shipment.cosigneeName} />
               <InfoRow
                 label="Port of Discharge"
                 value={shipment.portOfDischarge}
@@ -222,7 +229,7 @@ export default function ShipmentList() {
       </div>
 
       {deleteData && (
-        <Modal title="Confirm Deletion">
+        <Modal title="Confirm Deletion" visible={true}>
           <p>
             Are you sure you want to delete shipment{" "}
             <strong>{deleteData.billLandingNo}</strong>?
@@ -250,26 +257,10 @@ export default function ShipmentList() {
       >
         {editData && (
           <>
-            {message && (
-              <div
-                className={`text-sm mb-4 px-4 py-2 rounded-md ${
-                  message.startsWith("✅")
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {message}
-              </div>
-            )}
             <div className="grid grid-cols-3 gap-5 w-max">
               {[
-                "containerNo",
-                "importer",
-                "shippingLine",
                 "examinationAndCustomReleasing",
-                "consigneeName",
                 "customDocumentation",
-                "portOfDischarge",
                 "shippingReleasing",
                 "delivery",
               ].map((field) => (
@@ -284,9 +275,9 @@ export default function ShipmentList() {
                     }`}
                     defaultValue={
                       field === "containerNo"
-                        ? Array.isArray(editData?.containerNo)
-                          ? editData.containerNo[0] ?? ""
-                          : ""
+                        ? Array.isArray(editData.containerNo)
+                          ? editData.containerNo.join(", ")
+                          : editData.containerNo || ""
                         : editData?.[field] ?? ""
                     }
                     ref={(el) => {

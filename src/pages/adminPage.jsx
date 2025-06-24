@@ -9,7 +9,6 @@ export default function AdminPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [shipments, setShipments] = useState([]);
@@ -19,7 +18,7 @@ export default function AdminPage() {
     containerNo: "",
     importer: "",
     shippingLine: "",
-    consigneeName: "",
+    cosigneeName: "",
     eta: "",
     shippingReleasing: "",
     customDocumentation: "",
@@ -49,7 +48,7 @@ export default function AdminPage() {
       containerNo: "",
       importer: "",
       shippingLine: "",
-      consigneeName: "",
+      cosigneeName: "",
       eta: "",
       shippingReleasing: "",
       customDocumentation: "",
@@ -63,20 +62,21 @@ export default function AdminPage() {
 
   const handleUpdate = async (updated) => {
     try {
-      const res = await axios.put(`${API_BASE}/${updated.id}`, payload);
       const formatShippingLine = (line) => {
-        return line.replace(/\s+/g, "_").toUpperCase(); // "CMA CGM" → "CMA_CGM"
+        return line.replace(/\s+/g, "_").toUpperCase();
       };
 
       const payload = {
-        ...formData,
-        containerNo: [formData.containerNo], // Still needed from last fix
-        shippingLine: formatShippingLine(formData.shippingLine),
+        ...updated,
+        containerNo: Array.isArray(updated.containerNo)
+          ? updated.containerNo
+          : [updated.containerNo],
+        shippingLine: formatShippingLine(updated.shippingLine),
       };
+
+      const res = await axios.put(`${API_BASE}/${updated.id}`, payload);
       setShipments((prev) =>
-        prev.map((s) =>
-          s.billLandingNo === updated.billLandingNo ? res.data : s
-        )
+        prev.map((s) => (s.billLandingNo === updated.billLandingNo ? res.data : s))
       );
     } catch (err) {
       console.error("Error updating shipment:", err);
@@ -118,16 +118,15 @@ export default function AdminPage() {
     const payload = {
       ...formData,
       containerNo: [formData.containerNo],
-      shippingLine: formData.shippingLine.replace(" ", "_").toUpperCase(),
+      shippingLine: formData.shippingLine.replace(/\s+/g, "_").toUpperCase(),
     };
+
     try {
       setIsLoading(true);
-      const res = await axios.post(
-        "https://nacon-3v1d.onrender.com/api/shipments",
-        payload
-      );
+      const res = await axios.post(API_BASE, payload);
       setShipments((prev) => [...prev, res.data]);
       setSuccessMessage("Shipment entry created successfully.");
+      setShowConfirm(true);
       closeModals();
     } catch (error) {
       console.error("Error response:", error.response?.data);
@@ -139,52 +138,7 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-    window.location.reload();
   };
-
-  {
-    loading && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white p-4 rounded-lg shadow-lg">
-          <p className="text-lg font-semibold">Processing...</p>
-        </div>
-      </div>
-    );
-  }
-
-  {
-    apiError && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm text-center">
-          <p className="text-red-600 font-semibold">{apiError}</p>
-          <button
-            onClick={() => setApiError("")}
-            className="mt-4 bg-gray-200 px-4 py-2 rounded hover:opacity-80"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  {
-    showConfirm && (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-        <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm text-center">
-          <p className="text-green-700 font-semibold">
-            Shipment successfully created!
-          </p>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:opacity-80"
-          >
-            OK
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full bg-[var(--Secondary)] text-gray-800 flex flex-col">
@@ -224,23 +178,11 @@ export default function AdminPage() {
             </div>
 
             <div className="space-y-4 grid grid-cols-3 gap-4">
-              {[
-                { name: "billLandingNo", label: "Bill Lading No" },
-                { name: "containerNo", label: "Container No" },
-                { name: "importer", label: "Importer" },
-                { name: "shippingLine", label: "Shipping Line" },
-                { name: "consigneeName", label: "Consignee Name" },
-                { name: "eta", label: "ETA" },
-                { name: "shippingReleasing", label: "Shipping Release" },
-                { name: "customDocumentation", label: "Custom Documentation" },
-                {
-                  name: "examinationAndCustomReleasing",
-                  label: "Exam and Custom Releasing",
-                },
-                { name: "portOfDischarge", label: "Port of Discharge" },
-              ].map(({ name, label }) => (
+              {["billLandingNo", "containerNo", "importer", "shippingLine", "cosigneeName", "eta", "shippingReleasing", "customDocumentation", "examinationAndCustomReleasing", "portOfDischarge"].map((name) => (
                 <div key={name} className="flex flex-col">
-                  <label className="text-sm font-semibold mb-1">{label}:</label>
+                  <label className="text-sm font-semibold mb-1" htmlFor={name}>
+                    {name.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())}:
+                  </label>
                   <input
                     name={name}
                     type="text"
@@ -255,15 +197,10 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
-            {isLoading && (
-              <p className="text-blue-700 font-medium">Creating entry...</p>
-            )}
-            {errorMessage && (
-              <p className="text-red-600 text-sm mt-2">{errorMessage}</p>
-            )}
-            {successMessage && (
-              <p className="text-green-600 text-sm mt-2">{successMessage}</p>
-            )}
+
+            {isLoading && <p className="text-blue-700 font-medium">Creating entry...</p>}
+            {errorMessage && <p className="text-red-600 text-sm mt-2">{errorMessage}</p>}
+            {successMessage && <p className="text-green-600 text-sm mt-2">{successMessage}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button
@@ -280,13 +217,6 @@ export default function AdminPage() {
                 {isLoading ? "Creating..." : "Create Shipment"}
               </button>
             </div>
-          </div>
-        </div>
-      )}
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg text-center shadow-md">
-            <p className="font-semibold text-lg">Creating shipment...</p>
           </div>
         </div>
       )}
