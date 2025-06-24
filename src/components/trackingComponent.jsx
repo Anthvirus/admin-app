@@ -259,8 +259,13 @@ export default function ShipmentList() {
           <>
             <div className="grid grid-cols-3 gap-5 w-max">
               {[
+                "containerNo",
+                "importer",
+                "shippingLine",
                 "examinationAndCustomReleasing",
+                "cosigneeName",
                 "customDocumentation",
+                "portOfDischarge",
                 "shippingReleasing",
                 "delivery",
               ].map((field) => (
