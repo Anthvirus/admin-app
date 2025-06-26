@@ -19,7 +19,7 @@ export default function AdminPage() {
     importer: "",
     shippingLine: "",
     cosigneeName: "",
-    eta: "",
+    delivery: "",
     shippingReleasing: "",
     customDocumentation: "",
     examinationAndCustomReleasing: "",
