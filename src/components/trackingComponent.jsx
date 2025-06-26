@@ -127,7 +127,7 @@ export default function ShipmentList() {
 
   const Modal = ({ title, children, visible }) => (
     <div
-      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity ${
+      className={`fixed inset-0 flex items-center justify-center z-50 transition-opacity min-w-max ${
         visible
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
@@ -258,12 +258,12 @@ export default function ShipmentList() {
       >
         {editData && (
           <>
-            <div className="grid grid-cols-3 gap-5 w-max">
+            <div className="grid grid-cols-3 gap-5 min-w-auto">
               {[
                 "containerNo",
                 "importer",
                 "shippingLine",
-                "examinationAndCustomReleasing",
+                "examAndCustomReleasing",
                 "cosigneeName",
                 "customDocumentation",
                 "portOfDischarge",
