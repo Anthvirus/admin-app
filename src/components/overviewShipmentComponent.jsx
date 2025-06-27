@@ -11,7 +11,7 @@ export default function OverviewShipmentComponent() {
     async function fetchShipments() {
       try {
         const res = await axios.get(
-          "https://nacon-3v1d.onrender.com/api/shipments"
+          "https://nacon-v0.onrender.com/api/shipments"
         );
         setShipments(res.data);
         setLoading(false);

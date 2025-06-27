@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ShipmentList from "../components/trackingComponent";
 
-const API_BASE = "https://nacon-3v1d.onrender.com/api/shipments";
+const API_BASE = "https://nacon-v0.onrender.com/api/shipments";
 
 export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);

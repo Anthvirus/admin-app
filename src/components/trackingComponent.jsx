@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import axios from "axios";
 
-const API_BASE = "https://nacon-3v1d.onrender.com/api/shipments";
+const API_BASE = "https://nacon-v0.onrender.com/api/shipments";
 
 export default function ShipmentList() {
   const [showEditModal, setShowEditModal] = useState(false);
