@@ -12,6 +12,7 @@ export default function ShipmentList() {
   const [deleteData, setDeleteData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const inputRefs = useRef({});
 
   useEffect(() => {
@@ -27,10 +28,7 @@ export default function ShipmentList() {
         containerNo: Array.isArray(s.containerNo)
           ? s.containerNo
           : typeof s.containerNo === "string"
-          ? s.containerNo
-              .split(",")
-              .map((c) => c.trim())
-              .filter(Boolean)
+          ? s.containerNo.split(",").map((c) => c.trim()).filter(Boolean)
           : [],
       }));
       setShipments(formatted);
@@ -39,6 +37,12 @@ export default function ShipmentList() {
     }
     setLoading(false);
   };
+
+  const filteredShipments = shipments.filter((shipment) =>
+    shipment.containerNo?.some((num) =>
+      num.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const handleEditClick = (shipment) => {
     setEditData({ ...shipment });
@@ -159,8 +163,18 @@ export default function ShipmentList() {
         </div>
       )}
 
-      <div className="gap-2 flex flex-col p-2">
-        {shipments.map((shipment, idx) => (
+      <div className="w-1/2 p-4 fixed">
+        <input
+          type="text"
+          placeholder="Search by container number..."
+          className="w-full px-4 py-2 border bg-gray-200 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <div className="gap-2 flex flex-col p-2 mt-16">
+        {filteredShipments.map((shipment, idx) => (
           <div
             key={`${shipment.billLandingNo}-${idx}`}
             className="bg-[var(--Secondary)] text-[var(--Accent)] shadow-md rounded-lg p-4 flex-1 min-w-[20rem]"
@@ -276,6 +290,7 @@ export default function ShipmentList() {
                   </label>
                   <input
                     type="text"
+                    id={field}
                     className={`border rounded px-2 py-1 ${
                       formErrors[field] ? "border-red-500" : ""
                     }`}

@@ -4,8 +4,10 @@ import NaconLogo from "../assets/Nacon.jpg";
 
 export default function OverviewShipmentComponent() {
   const [shipments, setShipments] = useState([]);
+  const [filteredShipments, setFilteredShipments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchShipments() {
@@ -14,6 +16,7 @@ export default function OverviewShipmentComponent() {
           "https://nacon-v0.onrender.com/api/shipments"
         );
         setShipments(res.data);
+        setFilteredShipments(res.data);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching shipments:", err);
@@ -25,13 +28,32 @@ export default function OverviewShipmentComponent() {
     fetchShipments();
   }, []);
 
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+    const filtered = shipments.filter((shipment) =>
+      shipment.containerNo?.some((no) => no.toLowerCase().includes(term))
+    );
+    setFilteredShipments(filtered);
+  }, [searchTerm, shipments]);
+
   return (
-    <div className="p-6 h-full rounded-xl flex flex-col">
-      <div className="static flex gap-6">
-        <img src={NaconLogo} alt="" className="size-20" />
-        <h2 className="text-5xl uppercase font-bold my-8 text-[var(--Secondary)]">
-          Incoming Shipments View.
-        </h2>
+    <div className="py-6 h-full rounded-xl flex flex-col">
+      <div className=" flex items-center justify-between mb-8">
+        <div className="static flex gap-6 items-center">
+          <img src={NaconLogo} alt="" className="size-20" />
+          <h2 className="text-5xl uppercase font-bold my-8 text-[var(--Secondary)]">
+            Incoming Shipments View.
+          </h2>
+        </div>
+        <div className="mb-6 mt-2">
+          <input
+            type="text"
+            placeholder="Search by Container No."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full min-w-[40rem] px-4 py-2 border border-[var(--Primary)] rounded-md shadow-sm text-[var(--Primary)]"
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -41,9 +63,9 @@ export default function OverviewShipmentComponent() {
       ) : error ? (
         <div className="text-red-600 text-lg my-6 text-center">{error}</div>
       ) : (
-        <div className="rounded-lg border border-[var(--Primary)] overflow-y-auto">
+        <div className="rounded-lg border border-[var(--Primary)] max-h-full overflow-y-auto">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-[var(--Primary)] opacity-80 text-[var(--Accent)] uppercase tracking-wider text-center text-lg font-semibold h-16">
+            <thead className="bg-[var(--Primary)] text-[var(--Accent)] uppercase tracking-wider text-center text-lg font-semibold sticky top-0 z-10">
               <tr className="grid grid-cols-8 min-w-full pt-1 items-center">
                 <th className="px-4 py-3">Container No.</th>
                 <th className="px-4 py-3">Importer</th>
@@ -55,11 +77,11 @@ export default function OverviewShipmentComponent() {
                 <th className="px-4 py-3">Cosignee Name</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--Primary)">
-              {shipments.map((shipment) => (
+            <tbody className="divide-y divide-[var(--Primary)]">
+              {filteredShipments.map((shipment) => (
                 <tr
                   key={shipment.containerNo}
-                  className="hover:bg-[var(--Secondary)] grid grid-cols-8 items-center min-w-full hover:opacity-90 hover:text-[var(--Accent)] text-center text-[var(--Primary)] text-md font-bold delay-[.125s] duration-75"
+                  className="grid grid-cols-8 min-w-full items-center text-center text-[var(--Primary)] text-md font-bold hover:bg-[var(--Secondary)] hover:opacity-90 hover:text-[var(--Accent)] transition duration-75"
                 >
                   <td className="px-4 py-3 underline align-top">
                     <code className="bg-[var(--NavBackgroundTwo)] p-2 rounded-md whitespace-pre-line block">
@@ -75,7 +97,7 @@ export default function OverviewShipmentComponent() {
                   <td className="px-4 py-3">{shipment.status || "-"}</td>
                   <td className="px-4 py-3">{shipment.eta || "-"}</td>
                   <td className="px-4 py-3">
-                    {shipment.shippingLine.replace(/_/, " ") || "-"}
+                    {shipment.shippingLine?.replace(/_/, " ") || "-"}
                   </td>
                   <td className="px-4 py-3">{shipment.vessel || "-"}</td>
                   <td className="px-4 py-3">
