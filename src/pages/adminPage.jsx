@@ -60,7 +60,7 @@ export default function AdminPage() {
     setSuccessMessage("");
   };
 
-  const handleUpdate = async (updated) => {
+  const handleSave = async (updated) => {
     try {
       const formatShippingLine = (line) => {
         return line.replace(/\s+/g, "_").toUpperCase();
@@ -167,7 +167,7 @@ export default function AdminPage() {
       <div className="overflow-y-auto bg-[var(--Accent)] border-2 rounded-t-xl h-full">
         <ShipmentList
           shipments={shipments}
-          onUpdate={handleUpdate}
+          onUpdate={handleSave}
           onDelete={handleDelete}
           onSuccessMessage={setSuccessMessage}
         />

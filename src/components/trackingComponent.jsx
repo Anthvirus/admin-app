@@ -277,7 +277,7 @@ export default function ShipmentList() {
                 "containerNo",
                 "importer",
                 "shippingLine",
-                "examAndCustomReleasing",
+                "examinationAndCustomReleasing",
                 "cosigneeName",
                 "customDocumentation",
                 "portOfDischarge",
