@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import mockData from "./shipments"; // renamed to avoid conflict
+import Shipments from "./shipments"; // renamed to avoid conflict
 
 export default function ShipmentList() {
-  const [shipments, setShipments] = useState(mockData);
+  const [shipments, setShipments] = useState(Shipments);
   const [showEditModal, setShowEditModal] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [editData, setEditData] = useState(null);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ShipmentList from "../components/trackingComponent";
-import mockData from "../components/shipments"; // import local shipment array
+import Shipments from "../components/shipments.js"; // import local shipment array
 
 export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ export default function AdminPage() {
   });
 
   useEffect(() => {
-    setShipments(mockData); 
+    setShipments(Shipments); 
   }, []);
 
   const openNewEntry = () => setNewEntry(true);
