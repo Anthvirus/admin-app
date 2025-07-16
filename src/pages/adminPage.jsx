@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import ShipmentList from "../components/trackingComponent";
-
-const API_BASE = "https://nacon-v0.onrender.com/api/shipments";
+import mockData from "../components/shipments"; // import local shipment array
 
 export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,17 +25,8 @@ export default function AdminPage() {
   });
 
   useEffect(() => {
-    fetchShipments();
+    setShipments(mockData); 
   }, []);
-
-  const fetchShipments = async () => {
-    try {
-      const res = await axios.get(API_BASE);
-      setShipments(res.data);
-    } catch (err) {
-      console.error("Error fetching shipments:", err);
-    }
-  };
 
   const openNewEntry = () => setNewEntry(true);
 
@@ -62,11 +51,10 @@ export default function AdminPage() {
 
   const handleSave = async (updated) => {
     try {
-      const formatShippingLine = (line) => {
-        return line.replace(/\s+/g, "_").toUpperCase();
-      };
+      const formatShippingLine = (line) =>
+        line.replace(/\s+/g, "_").toUpperCase();
 
-      const payload = {
+      const updatedShipment = {
         ...updated,
         containerNo: Array.isArray(updated.containerNo)
           ? updated.containerNo
@@ -74,12 +62,12 @@ export default function AdminPage() {
         shippingLine: formatShippingLine(updated.shippingLine),
       };
 
-      const res = await axios.put(`${API_BASE}/${updated.id}`, payload);
-      setShipments((prev) =>
-        prev.map((s) =>
-          s.billLandingNo === updated.billLandingNo ? res.data : s
-        )
+      const updatedList = shipments.map((s) =>
+        s.billLandingNo === updated.billLandingNo ? updatedShipment : s
       );
+
+      setShipments(updatedList);
+      setSuccessMessage("Shipment updated successfully.");
     } catch (err) {
       console.error("Error updating shipment:", err);
     }
@@ -87,10 +75,10 @@ export default function AdminPage() {
 
   const handleDelete = async (billLandingNo) => {
     try {
-      await axios.delete(`${API_BASE}/${billLandingNo}`);
-      setShipments((prev) =>
-        prev.filter((s) => s.billLandingNo !== billLandingNo)
+      const filtered = shipments.filter(
+        (s) => s.billLandingNo !== billLandingNo
       );
+      setShipments(filtered);
     } catch (err) {
       console.error("Error deleting shipment:", err);
     }
@@ -107,43 +95,49 @@ export default function AdminPage() {
     setErrors((err) => ({ ...err, [name]: "" }));
   };
 
-  const handleCreate = async () => {
-    const newErrors = {};
-    Object.entries(formData).forEach(([k, v]) => {
-      if (!v.trim()) newErrors[k] = `Enter ${k.replace(/([A-Z])/g, " $1")}.`;
-    });
-    if (Object.keys(newErrors).length) {
-      setErrors(newErrors);
-      return;
-    }
+const handleCreate = async () => {
+  const newErrors = {};
+  Object.entries(formData).forEach(([k, v]) => {
+    if (!v.trim()) newErrors[k] = `Enter ${k.replace(/([A-Z])/g, " $1")}.`;
+  });
 
-    const payload = {
-      ...formData,
-      containerNo: [formData.containerNo],
-      shippingLine: formData.shippingLine.replace(/\s+/g, "_").toUpperCase(),
-    };
+  if (Object.keys(newErrors).length) {
+    setErrors(newErrors);
+    return;
+  }
 
-    try {
-      setIsLoading(true);
-      const res = await axios.post(API_BASE, payload);
-      setShipments((prev) => [...prev, res.data]);
-      setSuccessMessage("Shipment entry created successfully.");
-      setShowConfirm(true);
-      closeModals();
-    } catch (error) {
-      console.error("Error response:", error.response?.data);
-      const backendError =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Something went wrong";
-      setErrorMessage(backendError);
-    } finally {
-      setIsLoading(false);
-    }
+  // 🛑 Check for existing billLandingNo
+  const alreadyExists = shipments.some(
+    (s) => s.billLandingNo === formData.billLandingNo
+  );
+  if (alreadyExists) {
+    setErrorMessage("A shipment with this Bill Landing No already exists.");
+    return;
+  }
+
+  const payload = {
+    ...formData,
+    containerNo: [formData.containerNo],
+    shippingLine: formData.shippingLine.replace(/\s+/g, "_").toUpperCase(),
   };
 
+  try {
+    setIsLoading(true);
+    setShipments((prev) => [...prev, payload]);
+    setSuccessMessage("Shipment entry created successfully.");
+    setShowConfirm(true);
+    closeModals();
+  } catch (error) {
+    console.error("Creation error:", error);
+    setErrorMessage("Failed to create shipment.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   return (
-    <div className="w-full bg-[var(--Secondary)] text-gray-800 flex flex-col">
+    <div className="w-full text-[var(--Accent)] bg-gray-400 flex flex-col">
       <div className="flex justify-between ml-24 mr-12 items-center py-8">
         <h2 className="text-5xl font-extrabold text-[var(--NavBackgroundOne)]">
           Hello, Welcome back.
@@ -164,7 +158,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="overflow-y-auto bg-[var(--Accent)] border-2 rounded-t-xl h-full">
+      <div className="overflow-y-auto bg-gray-400 border-2 rounded-t-2xl h-full">
         <ShipmentList
           shipments={shipments}
           onUpdate={handleSave}

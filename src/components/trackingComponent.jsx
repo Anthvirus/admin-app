@@ -1,13 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import axios from "axios";
-
-const API_BASE = "https://nacon-v0.onrender.com/api/shipments";
+import mockData from "./shipments"; // renamed to avoid conflict
 
 export default function ShipmentList() {
+  const [shipments, setShipments] = useState(mockData);
   const [showEditModal, setShowEditModal] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-  const [shipments, setShipments] = useState([]);
   const [editData, setEditData] = useState(null);
   const [deleteData, setDeleteData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -15,33 +13,13 @@ export default function ShipmentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const inputRefs = useRef({});
 
-  useEffect(() => {
-    fetchShipments();
-  }, []);
-
-  const fetchShipments = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(API_BASE);
-      const formatted = res.data.map((s) => ({
-        ...s,
-        containerNo: Array.isArray(s.containerNo)
-          ? s.containerNo
-          : typeof s.containerNo === "string"
-          ? s.containerNo.split(",").map((c) => c.trim()).filter(Boolean)
-          : [],
-      }));
-      setShipments(formatted);
-    } catch (err) {
-      console.error("Error fetching shipments:", err);
-    }
-    setLoading(false);
-  };
-
   const filteredShipments = shipments.filter((shipment) =>
-    shipment.containerNo?.some((num) =>
-      num.toLowerCase().includes(searchTerm.toLowerCase())
+    (Array.isArray(shipment.containerNo)
+      ? shipment.containerNo.join(",")
+      : shipment.containerNo
     )
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   const handleEditClick = (shipment) => {
@@ -90,9 +68,13 @@ export default function ShipmentList() {
     setLoading(true);
 
     try {
-      await axios.put(`${API_BASE}/update`, newData);
+      const updatedList = shipments.map((s) =>
+        s.billLandingNo === newData.billLandingNo ? newData : s
+      );
+      setShipments(updatedList);
       setMessage("✅ Shipment updated successfully.");
-      window.location.reload();
+      setShowEditModal(false);
+      setEditData(null);
     } catch (err) {
       console.error("Error updating shipment:", err);
       setMessage("❌ Failed to update shipment.");
@@ -106,18 +88,16 @@ export default function ShipmentList() {
 
     setLoading(true);
     try {
-      await axios.delete(`${API_BASE}/${deleteData.id}`);
-      setMessage("🗑️ Shipment deleted.");
       setShipments((prev) =>
         prev.filter((s) => s.billLandingNo !== deleteData.billLandingNo)
       );
+      setMessage("🗑️ Shipment deleted.");
       setDeleteData(null);
     } catch (err) {
       console.error("Error deleting shipment:", err);
       setMessage("❌ Failed to delete shipment.");
     }
     setLoading(false);
-    window.location.reload();
   };
 
   const InfoRow = ({ label, value, style }) => (
@@ -167,7 +147,7 @@ export default function ShipmentList() {
         <input
           type="text"
           placeholder="Search by container number..."
-          className="w-full px-4 py-2 border bg-gray-200 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border-2 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -177,15 +157,15 @@ export default function ShipmentList() {
         {filteredShipments.map((shipment, idx) => (
           <div
             key={`${shipment.billLandingNo}-${idx}`}
-            className="bg-[var(--Secondary)] text-[var(--Accent)] shadow-md rounded-lg p-4 flex-1 min-w-[20rem]"
+            className="bg-[var(--Secondary)] text-[var(--Accent)] shadow-md rounded-lg p-4 flex-1 min-w-[20rem] border-2"
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold p-1 bg-gray-300 rounded-md">
-                {shipment.billLandingNo} –{" "}
+                {shipment.billLandingNo} - {" "}
                 <span className="text-blue-900 font-mono">
-                  {shipment.containerNo?.length
+                  {Array.isArray(shipment.containerNo)
                     ? `{${shipment.containerNo.join(" - ")}}`
-                    : `{—}`}
+                    : `{${shipment.containerNo || "—"}}`}
                 </span>
               </h2>
 
@@ -260,7 +240,7 @@ export default function ShipmentList() {
               onClick={handleDelete}
               className="px-4 py-2 bg-red-700 text-white rounded-md hover:opacity-80 cursor-pointer"
             >
-              {loading ? "Deleting" : "Delete Shipment"}
+              {loading ? "Deleting..." : "Delete Shipment"}
             </button>
           </div>
         </Modal>
@@ -273,7 +253,7 @@ export default function ShipmentList() {
         {editData && (
           <>
             <div className="grid grid-cols-3 gap-5 min-w-auto">
-              {[
+              {[ 
                 "containerNo",
                 "importer",
                 "shippingLine",
@@ -282,7 +262,7 @@ export default function ShipmentList() {
                 "customDocumentation",
                 "portOfDischarge",
                 "shippingReleasing",
-                "delivery",
+                "delivery"
               ].map((field) => (
                 <div className="flex flex-col mb-3" key={field}>
                   <label className="capitalize text-sm font-medium">
