@@ -19,7 +19,7 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
 
-    if (adminId === "NaconAdmin1" && password === "N@con#1230") {
+    if (adminId === "DemoAdmin1" && password === "N@con#1230") {
       localStorage.setItem("isAuthenticated", "true");
       navigate("/admin");
     } else {
