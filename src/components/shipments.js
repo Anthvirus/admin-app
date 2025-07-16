@@ -88,66 +88,6 @@ const Shipments = [
     status: "On Hold",
     vessel: "Evergreen Marine",
     billLandingNo: "BL33445566"
-  },
-  {
-    containerNo: ["DEF34GH908"],
-    importer: "Fola Adebayo",
-    shippingLine: "ONE",
-    examinationAndCustomReleasing: "Pending",
-    cosigneeName: "Lola James",
-    customDocumentation: "In Progress",
-    portOfDischarge: "Port Harcourt",
-    shippingReleasing: "Uncleared",
-    delivery: "Not yet",
-    ETA: "2025-07-23",
-    status: "In Transit",
-    vessel: "ONE Apus",
-    billLandingNo: "BL10293847"
-  },
-  {
-    containerNo: ["KLM5566JJ", "POI9988UU"],
-    importer: "Seyi Law",
-    shippingLine: "ZIM",
-    examinationAndCustomReleasing: "Cleared",
-    cosigneeName: "Emeka Obi",
-    customDocumentation: "Completed",
-    portOfDischarge: "Lekki",
-    shippingReleasing: "Cleared",
-    delivery: "Completed",
-    ETA: "2025-07-13",
-    status: "Delivered",
-    vessel: "ZIM Rotterdam",
-    billLandingNo: "BL77665544"
-  },
-  {
-    containerNo: ["NMB43XY872"],
-    importer: "Amina Yusuf",
-    shippingLine: "Maersk",
-    examinationAndCustomReleasing: "Pending",
-    cosigneeName: "Rahman Musa",
-    customDocumentation: "Pending",
-    portOfDischarge: "Apapa",
-    shippingReleasing: "Uncleared",
-    delivery: "Not yet",
-    ETA: "2025-07-26",
-    status: "Awaiting Documents",
-    vessel: "Maersk Cape Town",
-    billLandingNo: "BL56473829"
-  },
-  {
-    containerNo: ["UIO1122RT", "WQZ5566PL"],
-    importer: "Blessing Efe",
-    shippingLine: "MSC",
-    examinationAndCustomReleasing: "Pending",
-    cosigneeName: "Uche Nwankwo",
-    customDocumentation: "Pending",
-    portOfDischarge: "Tin Can",
-    shippingReleasing: "Uncleared",
-    delivery: "Not yet",
-    ETA: "2025-07-28",
-    status: "In Transit",
-    vessel: "MSC Titan",
-    billLandingNo: "BL44556677"
   }
 ];
 
