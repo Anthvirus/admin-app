@@ -9,8 +9,8 @@ const Shipments = [
     portOfDischarge: "Lekki",
     shippingReleasing: "Uncleared",
     delivery: "Not yet",
-    ETA: "2025-07-20",
-    status: "In Transit",
+    ETA: "2025-07-03",
+    status: "Arrived",
     vessel: "Maersk Kampala",
     billLandingNo: "BL12345678"
   },
@@ -24,8 +24,8 @@ const Shipments = [
     portOfDischarge: "Apapa",
     shippingReleasing: "Cleared",
     delivery: "Completed",
-    ETA: "2025-07-12",
-    status: "Delivered",
+    ETA: "2025-07-10",
+    status: "Arrived",
     vessel: "MSC Zoe",
     billLandingNo: "BL87654321"
   },
@@ -39,8 +39,8 @@ const Shipments = [
     portOfDischarge: "Tin Can",
     shippingReleasing: "Uncleared",
     delivery: "Not yet",
-    ETA: "2025-07-25",
-    status: "Awaiting Clearance",
+    ETA: "2025-07-15",
+    status: "Arrived",
     vessel: "CMA CGM Benjamin Franklin",
     billLandingNo: "BL11223344"
   },
@@ -54,8 +54,8 @@ const Shipments = [
     portOfDischarge: "Onne",
     shippingReleasing: "Cleared",
     delivery: "Completed",
-    ETA: "2025-07-10",
-    status: "Delivered",
+    ETA: "2025-07-27",
+    status: "Sailing",
     vessel: "COSCO Netherlands",
     billLandingNo: "BL99887766"
   },
@@ -69,8 +69,8 @@ const Shipments = [
     portOfDischarge: "Warri",
     shippingReleasing: "Uncleared",
     delivery: "Not yet",
-    ETA: "2025-07-19",
-    status: "In Transit",
+    ETA: "2025-07-29",
+    status: "Sailing",
     vessel: "Hapag Hamburg",
     billLandingNo: "BL55667788"
   },
@@ -84,8 +84,8 @@ const Shipments = [
     portOfDischarge: "Calabar",
     shippingReleasing: "Uncleared",
     delivery: "Not yet",
-    ETA: "2025-07-22",
-    status: "On Hold",
+    ETA: "2025-08-02",
+    status: "Sailing",
     vessel: "Evergreen Marine",
     billLandingNo: "BL33445566"
   }
